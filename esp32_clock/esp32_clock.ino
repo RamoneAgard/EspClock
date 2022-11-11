@@ -17,6 +17,7 @@
 //#include <WiFiUdp.h>
 #include <HTTPClient.h>
 #include "indexLED.h"
+#include "info.h"
 
 #define USE_SERIAL Serial
 
@@ -40,8 +41,6 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 //NTPClient timeClient(ntpUDP, "north-america.pool.ntp.org", -21600);
 #define matrix_width 64
 #define matrix_height 32
-const char* ssid     = "CLRNetwork";
-const char* password = "Lamone02*";
 String wifiMessage = "";
 
 const char *tickers[] = {"spy", "qqqm", "msft", "swppx", "pacb"};
@@ -143,7 +142,6 @@ String getMarket(String ticker) {
     HTTPClient http;
 
     String urlStart = "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=";
-    String apiEnd = "&apikey=Y6YPHOY8QN5FG3HN";
     String target = urlStart + ticker + apiEnd;
 
     USE_SERIAL.print("[HTTP] begin...\n");

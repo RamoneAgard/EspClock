@@ -1,3 +1,4 @@
 #ignore file types
 *.html
-.DS_Store
+.DS_Store 
+info.h

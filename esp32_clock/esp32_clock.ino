@@ -1,10 +1,3 @@
-/**
-   BasicHTTPClient.ino
-
-    Created on: 24.05.2015
-
-*/
-
 #include <Arduino.h>
 #include <PxMatrix.h>
 #include <time.h>

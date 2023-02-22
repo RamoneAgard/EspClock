@@ -23,22 +23,25 @@ class DisplayController {
     uint8_t display_draw_time;
     hw_timer_t * timer = NULL;
     portMUX_TYPE timerMux;
+    //set-up helper
     void IRAM_ATTR display_updater();
 
   public:
     DisplayController();
+    void startDisplayController();
     void displayTime(String tm, uint8_t y1, uint8_t y2);
     int stepScroll(int lastStep, unsigned long firstTime, uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t color);
     void scroll_text(uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB, String text2 = "", uint8_t ypos2 = 24);
+    void printToScreen(uint8_t ypos, String text);
     // Some standard colors
-    uint16_t myRED = display.color565(255, 0, 0);
-    uint16_t myGREEN = display.color565(0, 255, 0);
-    uint16_t myBLUE = display.color565(0, 0, 255);
-    uint16_t myWHITE = display.color565(255, 255, 255);
-    uint16_t myYELLOW = display.color565(255, 255, 0);
-    uint16_t myCYAN = display.color565(0, 255, 255);
-    uint16_t myMAGENTA = display.color565(255, 0, 255);
-    uint16_t myBLACK = display.color565(0, 0, 0);
+    uint16_t myRED;
+    uint16_t myGREEN;
+    uint16_t myBLUE;
+    uint16_t myWHITE;
+    uint16_t myYELLOW;
+    uint16_t myCYAN;
+    uint16_t myMAGENTA;
+    uint16_t myBLACK;
 
 };
 

@@ -14,7 +14,7 @@ DisplayController::DisplayController(){
     myCYAN = display.color565(0, 255, 255);
     myMAGENTA = display.color565(255, 0, 255);
     myBLACK = display.color565(0, 0, 0);
-    void IRAM_ATTR display_updater(); 
+    display_updater(); 
     //pixel Setup
     #ifdef ESP32
     timer = timerBegin(0, 80, true);
@@ -22,6 +22,11 @@ DisplayController::DisplayController(){
     timerAlarmWrite(timer, 2000, true);
     timerAlarmEnable(timer);
     #endif
+}
+
+void DisplayController::startDisplayController(){
+  display.begin(16);
+  display.flushDisplay();
 }
 
 void IRAM_ATTR DisplayController::display_updater(){
@@ -73,6 +78,12 @@ int DisplayController::stepScroll(int lastStep, unsigned long firstTime, uint8_t
     return (lastStep + 1);
   }
   return lastStep;
+}
+
+void DisplayController::printToScreen(uint8_t ypos, String text){
+  display.fillRect(0, ypos, 64, 8, display.color565(0, 0, 0));
+  display.setCursor(0, ypos);
+  display.println(text);
 }
 
 //Full Screen Text Scroll -- From PxMatrix Library examples //

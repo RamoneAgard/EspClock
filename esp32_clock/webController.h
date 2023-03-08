@@ -5,6 +5,7 @@
 #include <ArduinoJson.h>
 #include <WiFi.h>
 #include <WebServer.h>
+#include <HTTPClient.h>
 #include <WiFiClient.h>
 #include <time.h>
 #include "info.h"
@@ -13,22 +14,27 @@
 class WebController {
   
   private:
-    String ip_address;
-    unsigned int wifiMessageBuffLen;
+    // Fields // 
+    const byte wifiMessageBuffLen;
+    char wifi_message[];
+    const byte numTickers;
+    const char* tickers[];
+    const char[] ip_address;
     WebServer server;
-    const char[][] tickers;
-    const short numTickers;
+
+    // Methods //
     String stock_api_request(char[] ticker);
     void handleRoot();
     void handleMessage();
     void handleNotFound();
     
   public:
-    WebController(char[][] myTickers, short tickersLen, unsigned int wifiMessageBuffer);
+    // Methods //
+    WebController(char[][] myTickers, short tickersLen, short wifiMessageBuffer);
     void startServerAndClient();
-    String wifi_message;
     String getNptTime();
     String getMarket();
+    char* getWifiMessage();
     void updateServer();
  
 };

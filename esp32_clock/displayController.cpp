@@ -1,11 +1,6 @@
 #include "displayController.h"
 
-DisplayController::DisplayController(){
-    display(64, 32, P_LAT, P_OE, P_A, P_B, P_C, P_D);
-    display_draw_time = 70;
-    timer = NULL;
-    timerMux = portMUX_INITIALIZER_UNLOCKED;
-    
+DisplayController::DisplayController():display(matrix_width, matrix_height, P_LAT, P_OE, P_A, P_B, P_C, P_D){
     myRED = display.color565(255, 0, 0);
     myGREEN = display.color565(0, 255, 0);
     myBLUE = display.color565(0, 0, 255);
@@ -14,26 +9,18 @@ DisplayController::DisplayController(){
     myCYAN = display.color565(0, 255, 255);
     myMAGENTA = display.color565(255, 0, 255);
     myBLACK = display.color565(0, 0, 0);
-    display_updater(); 
     //pixel Setup
-    #ifdef ESP32
-    timer = timerBegin(0, 80, true);
-    timerAttachInterrupt(timer, &display_updater, true);
-    timerAlarmWrite(timer, 2000, true);
-    timerAlarmEnable(timer);
-    #endif
 }
 
 void DisplayController::startDisplayController(){
   display.begin(16);
   display.flushDisplay();
-}
-
-void IRAM_ATTR DisplayController::display_updater(){
-   // Increment the counter and set the time of ISR
-  portENTER_CRITICAL_ISR(&timerMux);
-  display.display(display_draw_time);
-  portEXIT_CRITICAL_ISR(&timerMux);
+  #ifdef ESP32
+    timer = timerBegin(0, 80, true);
+    timerAttachInterrupt(timer, interruptFunc, true);
+    timerAlarmWrite(timer, 2000, true);
+    timerAlarmEnable(timer);
+    #endif
 }
 
 void DisplayController::displayTime(String tm, uint8_t y1, uint8_t y2){
@@ -58,7 +45,7 @@ void DisplayController::displayTime(String tm, uint8_t y1, uint8_t y2){
 // the last step (lastStep) in the scroll function returned by the last call
 // (zero for the first call to the function)
 // return is -1 if scrolling is done
-int DisplayController::stepScroll(int lastStep, unsigned long firstTime, uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t color){
+int DisplayController::stepScroll(int lastStep, unsigned long firstTime, uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB){
   if (millis() >= firstTime + (scroll_delay * lastStep)) {
     uint16_t text_length = text.length();
     int startStep = matrix_width;
@@ -86,8 +73,9 @@ void DisplayController::printToScreen(uint8_t ypos, String text){
   display.println(text);
 }
 
+
 //Full Screen Text Scroll -- From PxMatrix Library examples //
-void DisplayContoller::scroll_text(uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB, String text2 = "", uint8_t ypos2 = 24){
+void DisplayController::scroll_text(uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB, String text2, uint8_t ypos2){
   uint16_t text_length = text.length();
   bool two = (text2.length() > 0 ) ? true : false;
   if (text2.length() > text_length) {
@@ -122,4 +110,12 @@ void DisplayContoller::scroll_text(uint8_t ypos, unsigned long scroll_delay, Str
     yield();
 
   }
+}
+
+void DisplayController::setInterruptFunc(void (f)()){
+  interruptFunc = f;
+}
+
+void DisplayController::show(uint8_t draw_time){
+  display.display(draw_time);  
 }

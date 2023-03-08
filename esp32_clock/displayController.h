@@ -19,20 +19,26 @@
 class DisplayController {
   
   private:
+    // Fields //
     PxMATRIX display;
-    uint8_t display_draw_time;
     hw_timer_t * timer = NULL;
-    portMUX_TYPE timerMux;
-    //set-up helper
-    void IRAM_ATTR display_updater();
-
+    void (*interruptFunc)() = NULL;
+ 
   public:
+    // Fields //
+    static const uint8_t display_draw_time = 70;
+
+    // Constructor //
     DisplayController();
+
+    // Methods //
     void startDisplayController();
     void displayTime(String tm, uint8_t y1, uint8_t y2);
-    int stepScroll(int lastStep, unsigned long firstTime, uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t color);
+    int stepScroll(int lastStep, unsigned long firstTime, uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB);
     void scroll_text(uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB, String text2 = "", uint8_t ypos2 = 24);
     void printToScreen(uint8_t ypos, String text);
+    void setInterruptFunc(void (f)());
+    void show(uint8_t draw_time);
     // Some standard colors
     uint16_t myRED;
     uint16_t myGREEN;

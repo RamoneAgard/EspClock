@@ -527,7 +527,7 @@ void IRAM_ATTR display_updater() {
 
 
 void setup(){
-dispControl.setInterruptFunc(display_updater);
+  dispControl.setInterruptFunc(display_updater);
 }
 
 void loop(){

@@ -1,15 +1,16 @@
 #include "displayController.h"
 
-DisplayController::DisplayController():display(matrix_width, matrix_height, P_LAT, P_OE, P_A, P_B, P_C, P_D){
-    myRED = display.color565(255, 0, 0);
-    myGREEN = display.color565(0, 255, 0);
-    myBLUE = display.color565(0, 0, 255);
-    myWHITE = display.color565(255, 255, 255);
-    myYELLOW = display.color565(255, 255, 0);
-    myCYAN = display.color565(0, 255, 255);
-    myMAGENTA = display.color565(255, 0, 255);
-    myBLACK = display.color565(0, 0, 0);
-    //pixel Setup
+DisplayController::DisplayController()
+  : display(matrix_width, matrix_height, P_LAT, P_OE, P_A, P_B, P_C, P_D) {
+  myRED = display.color565(255, 0, 0);
+  myGREEN = display.color565(0, 255, 0);
+  myBLUE = display.color565(0, 0, 255);
+  myWHITE = display.color565(255, 255, 255);
+  myYELLOW = display.color565(255, 255, 0);
+  myCYAN = display.color565(0, 255, 255);
+  myMAGENTA = display.color565(255, 0, 255);
+  myBLACK = display.color565(0, 0, 0);
+  //pixel Setup
 }
 
 void DisplayController::startDisplayController(){
@@ -20,7 +21,7 @@ void DisplayController::startDisplayController(){
     timerAttachInterrupt(timer, interruptFunc, true);
     timerAlarmWrite(timer, 2000, true);
     timerAlarmEnable(timer);
-    #endif
+  #endif
 }
 
 void DisplayController::displayTime(String tm, uint8_t y1, uint8_t y2){

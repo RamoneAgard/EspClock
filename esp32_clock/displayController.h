@@ -39,6 +39,7 @@ class DisplayController {
     void printToScreen(uint8_t ypos, String text);
     void setInterruptFunc(void (f)());
     void show(uint8_t draw_time);
+    
     // Some standard colors
     uint16_t myRED;
     uint16_t myGREEN;

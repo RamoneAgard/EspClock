@@ -24,7 +24,7 @@ void DisplayController::startDisplayController(){
   #endif
 }
 
-void DisplayController::displayTime(String tm, uint8_t y1, uint8_t y2){
+void DisplayController::displayTime(char tm[], uint8_t y1, uint8_t y2){
   int split = tm.indexOf('\n');
   String top = tm.substring(0, split);
   String bottom = tm.substring(split + 1, 19) + tm.substring(20);
@@ -68,7 +68,7 @@ int DisplayController::stepScroll(int lastStep, unsigned long firstTime, uint8_t
   return lastStep;
 }
 
-void DisplayController::printToScreen(uint8_t ypos, String text){
+void DisplayController::printToScreen(uint8_t ypos, char* text){
   display.fillRect(0, ypos, 64, 8, display.color565(0, 0, 0));
   display.setCursor(0, ypos);
   display.println(text);

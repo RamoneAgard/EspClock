@@ -43,11 +43,11 @@ void WebController::getNptTime(char timeBuff[], byte buffLen) {
   time_t now;
   time(&now);
   struct tm tStruct =  *localtime(&now);
-  if (tStruct.tm_hour == 16 && tStruct.tm_min == 30) {
-    if (tStruct.tm_sec <= 2) {
-      // update market
-    }
-  }
+  // if (tStruct.tm_hour == 16 && tStruct.tm_min == 30) {
+  //   if (tStruct.tm_sec <= 2) {
+  //     // update market
+  //   }
+  // }
   strftime(timeBuff, buffLen, "%a %b %d\n%r", &tStruct); // Mon Apr 13 12:30:45 pm
 }
 
@@ -56,7 +56,7 @@ void WebController::getMarket(char marketBuff[], char *searchTickers[], byte num
   for (byte i = 0; i < numTickers; i++) {
     stock_api_request(searchTickers[i], apiCallBuffer);
     if(i == 0){
-      strcpy(marketBuff, apiCallBuffer);      
+      strcpy(marketBuff, apiCallBuffer);
     }
     else {
       strcat(marketBuff, ", ");

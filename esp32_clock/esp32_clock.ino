@@ -510,10 +510,18 @@
 #include "webController.h"
 #include "displayController.h"
 
-DisplayController dispControl;
-hw_timer_t * timer = NULL;
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+// Message buffers and Fields // 
+char timeStorage[25];
 
+
+// Main web controller and setup // 
+WebController webControl()
+
+// Main display controller and setup portion //
+DisplayController dispControl;
+// field for display setup
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+// update method for display setup
 #ifdef ESP32
 void IRAM_ATTR display_updater() {
   // Increment the counter and set the time of ISR
@@ -523,11 +531,10 @@ void IRAM_ATTR display_updater() {
 }
 #endif
 
-
-
-
 void setup(){
-  dispControl.setInterruptFunc(display_updater);
+
+  //setup the web controller
+
 }
 
 void loop(){

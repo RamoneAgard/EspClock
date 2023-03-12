@@ -25,19 +25,23 @@ void DisplayController::startDisplayController(){
 }
 
 void DisplayController::displayTime(char tm[], uint8_t y1, uint8_t y2){
-  int split = tm.indexOf('\n');
-  String top = tm.substring(0, split);
-  String bottom = tm.substring(split + 1, 19) + tm.substring(20);
+  char* secondToken = strtok(tm,"\n");
+  if(secondToken != NULL){
+    secondToken = strtok(NULL, "\n");
+  }
+  // int split = tm.indexOf('\n');
+  // String top = tm.substring(0, split);
+  // String bottom = tm.substring(split + 1, 19) + tm.substring(20);
   display.setTextSize(1);
   display.setTextWrap(true);
   display.setCursor(2, y1);
   //display.setTextColor(myGREEN);
   //display.clearDisplay();
-  display.fillRect(0, y1, 64, 8, display.color565(0, 0, 0));
-  display.print(top);
+  display.fillRect(0, y1, matrix_width, matrix_height/4, display.color565(0, 0, 0));
+  display.print(tm);
   display.setCursor(2, y2);
-  display.fillRect(0, y2, 64, 8, display.color565(0, 0, 0));
-  display.println(bottom);
+  display.fillRect(0, y2, matrix_width, matrix_height/4, display.color565(0, 0, 0));
+  display.println(secondToken);
   return;
 }
 
@@ -46,9 +50,9 @@ void DisplayController::displayTime(char tm[], uint8_t y1, uint8_t y2){
 // the last step (lastStep) in the scroll function returned by the last call
 // (zero for the first call to the function)
 // return is -1 if scrolling is done
-int DisplayController::stepScroll(int lastStep, unsigned long firstTime, uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB){
+int DisplayController::stepScroll(int lastStep, unsigned long firstTime, byte scroll_delay, uint8_t ypos,  char* text, uint8_t colorR, uint8_t colorG, uint8_t colorB){
   if (millis() >= firstTime + (scroll_delay * lastStep)) {
-    uint16_t text_length = text.length();
+    uint16_t text_length = strlen(text);
     int startStep = matrix_width;
     int endStep = -(5 + (text_length * 6));
     display.setTextWrap(false);  // we don't wrap text so it scrolls nicely
@@ -56,12 +60,11 @@ int DisplayController::stepScroll(int lastStep, unsigned long firstTime, uint8_t
     display.setRotation(0);
     display.fillRect(0, ypos, 64, 8, display.color565(0, 0, 0));
     display.setTextColor(display.color565(colorR, colorG, colorB));
-    int xpos = startStep - lastStep;
-    if (xpos <= endStep) {
+    if (startStep - lastStep <= endStep) {
       display.setCursor(0, ypos);
       return -1;
     }
-    display.setCursor(xpos, ypos);
+    display.setCursor((startStep - lastStep), ypos);
     display.println(text);
     return (lastStep + 1);
   }

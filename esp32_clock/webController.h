@@ -9,8 +9,6 @@ class WebController {
     // Fields // 
     const byte wifiMessageBuffLen;
     char * wifiMessage;
-    //const byte numTickers;
-    //const char** tickers;
     char ipAddress[20];
     WebServer server;
 
@@ -27,6 +25,7 @@ class WebController {
     void getNptTime(char timeBuff[], byte buffLen);
     void getMarket(char marketBuff[], char *searchTickers[], byte numTickers);
     void updateServer();
+    void getIpAddress(char ipBuff[]);
  
 };
 

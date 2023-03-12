@@ -511,11 +511,22 @@
 #include "displayController.h"
 
 // Message buffers and Fields // 
-char timeStorage[25];
+const byte timeBuffLen = 25;
+char timeStorage[timeBuffLen];
 
+const byte numTickers = 5;
+char* apiTickers[numTickers] = {"spy", "qqqm", "msft", "swppx", "pacb"};
+
+const int marketApiBuffLen = 25 * numTickers;
+char marketApiStorage[marketApiBuffLen];
+
+const byte serverMessageBuffLen = 35;
+char serverMessageStorage[serverMessageBuffLen];
+
+char debugMessage[50];
 
 // Main web controller and setup // 
-WebController webControl()
+WebController webControl(serverMessageStorage, serverMessageBuffLen);
 
 // Main display controller and setup portion //
 DisplayController dispControl;
@@ -531,13 +542,54 @@ void IRAM_ATTR display_updater() {
 }
 #endif
 
+// Loop Timing Variables //
+unsigned long lastMarketRequest = 0;
+unsigned long marketRequestDelay = 86400000;
+
+unsigned long lastTimeRequest = 0;
+int timeRequestDelay = 300;
+
+
 void setup(){
+  Serial.begin(115200);
+  Serial.println("SetUp");
 
   //setup the web controller
+  Serial.println("Attempting internet connection");
+  webControl.startServerAndClient();
+  webControl.getIpAddress(debugMessage);
+  Serial.println(debugMessage);
 
+  // get inital market data
+  Serial.print("Attempt Market Request ");
+  webControl.getMarket(marketApiStorage, apiTickers, numTickers);
+  Serial.println(marketApiStorage);
+
+  //get inital time data 
+  webControl.getNptTime(timeStorage, timeBuffLen);
+  Serial.println(timeStorage);
+  
+  Serial.println("END SetUp");
 }
 
+
 void loop(){
+
+  // Time portion //
+  if(millis() >= lastTimeRequest + timeRequestDelay){
+    webControl.getNptTime(timeStorage, timeBuffLen);
+    lastTimeRequest = millis();
+    Serial.println(timeStorage);
+  }
+
+  // Market api potion //
+  if(millis() > lastMarketRequest + marketRequestDelay){
+    webControl.getMarket(marketApiStorage, apiTickers, numTickers);
+    lastMarketRequest = millis();
+    Serial.println(marketApiStorage);
+  }
+
+  webControl.updateServer();
 
 }
 

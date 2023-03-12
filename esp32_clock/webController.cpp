@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <time.h>
 #include "info.h"
@@ -22,6 +23,7 @@ void WebController::startServerAndClient() {
     delay(500);
     Serial.print(".");
   }
+  Serial.println("Connected to wifi");
   ((WiFi.localIP()).toString()).toCharArray(ipAddress, 20);
   
   // set server mappings and pram variables
@@ -67,7 +69,8 @@ void WebController::getMarket(char marketBuff[], char *searchTickers[], byte num
 
 void WebController::stock_api_request(char* ticker, char apiBuff[]) {
   if ((WiFi.status() == WL_CONNECTED)) {
-    WiFiClient client;
+    WiFiClientSecure client;
+    client.setInsecure();
     HTTPClient http;
 
     char target[100];
@@ -75,13 +78,17 @@ void WebController::stock_api_request(char* ticker, char apiBuff[]) {
     strcat(target, ticker);
     strcat(target, apiEnd);
 
-    //    USE_SERIAL.print("[HTTP] begin...\n");
+    Serial.print("url target: ");    
+    Serial.println(target);
     http.begin(client, target); //HTTP
+    http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
 
     //    USE_SERIAL.print("[HTTP] GET...\n");
     // start connection and send HTTP header
     int httpCode = http.GET();
+    Serial.println(httpCode);
 
+    //Serial.println(http.getString());
     // httpCode will be negative on error
     if (httpCode == HTTP_CODE_OK) {
       // HTTP header has been send and Server response header has been handled
@@ -90,8 +97,8 @@ void WebController::stock_api_request(char* ticker, char apiBuff[]) {
       DeserializationError error = deserializeJson(doc, http.getStream());
       // file found at server
       if (error) {
-        // Serial.print(F("deserializeJson() failed: "));
-        // Serial.println(error.f_str());
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
         strcpy(apiBuff, "deserialization error");
         return;
       }
@@ -100,7 +107,7 @@ void WebController::stock_api_request(char* ticker, char apiBuff[]) {
       strcpy(apiBuff, Global_Quote["01. symbol"]);
       strcat(apiBuff, ":");
       strncat(apiBuff, Global_Quote["05. price"], strlen(Global_Quote["05. price"])-2);
-      strcat(apiBuff, "-");
+      strcat(apiBuff, " ");
       strncat(apiBuff, Global_Quote["09. change"], strlen(Global_Quote["09. change"])-2);
       // const char* symbol = Global_Quote["01. symbol"]; // "QQQM"
       // const char* price = Global_Quote["05. price"]; // "132.1600
@@ -113,7 +120,7 @@ void WebController::stock_api_request(char* ticker, char apiBuff[]) {
       // Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
       strcpy(apiBuff, "HTTP GET error");
     }
-
+    Serial.println("Http end");
     http.end();
   }
   else {
@@ -134,10 +141,12 @@ void WebController::handleRoot() {
 void WebController::handleMessage() {
   if (server.args() >= 1 && server.argName(0) == "m") {
     server.arg("m").toCharArray(wifiMessage, wifiMessageBuffLen);
-    if (wifiMessage[0] == 0 || wifiMessage[1] == 0) {
+    if (wifiMessage[0] == 0 || wifiMessage[1] == 0){
       strcpy(wifiMessage, "Send a message to ");
       strcat(wifiMessage, ipAddress);
     }
+    Serial.print("wifi Message: ");
+    Serial.println(wifiMessage);
     server.send(200, "text/html", INDEX_HTML);
   } else {
     char response[170] = "<html> \n <body> \n <h1>NO Message Received</h1>\n <br>\n <h4>send me a message with ";
@@ -149,4 +158,8 @@ void WebController::handleMessage() {
 
 void WebController::handleNotFound() {
   server.send(404, "text/plain", "Request Not Found");
+}
+
+void WebController::getIpAddress(char ipBuff[]){
+  strcpy(ipBuff, ipAddress);
 }

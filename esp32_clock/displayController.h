@@ -33,8 +33,8 @@ class DisplayController {
 
     // Methods //
     void startDisplayController();
-    void displayTime(String tm, uint8_t y1, uint8_t y2);
-    int stepScroll(int lastStep, unsigned long firstTime, uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB);
+    void displayTime(char* tm, uint8_t y1, uint8_t y2);
+    int stepScroll(int lastStep, unsigned long firstTime, byte scroll_delay, uint8_t ypos,  char* text, uint8_t colorR, uint8_t colorG, uint8_t colorB);
     void scroll_text(uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB, String text2 = "", uint8_t ypos2 = 24);
     void printToScreen(uint8_t ypos, char* text);
     void setInterruptFunc(void (f)());

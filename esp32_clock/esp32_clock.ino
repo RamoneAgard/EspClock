@@ -575,21 +575,25 @@ void setup(){
 
 void loop(){
 
-  // Time portion //
+  // Time update //
   if(millis() >= lastTimeRequest + timeRequestDelay){
     webControl.getNptTime(timeStorage, timeBuffLen);
     lastTimeRequest = millis();
     Serial.println(timeStorage);
   }
 
-  // Market api potion //
+  // Market api update //
   if(millis() > lastMarketRequest + marketRequestDelay){
     webControl.getMarket(marketApiStorage, apiTickers, numTickers);
     lastMarketRequest = millis();
     Serial.println(marketApiStorage);
   }
 
-  webControl.updateServer();
+  // Server message updating //
+  if(webControl.updateServer()){
+    Serial.print("Message Update: ");
+    Serial.println(serverMessageStorage);
+  }
 
 }
 

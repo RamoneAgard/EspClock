@@ -38,19 +38,17 @@ void WebController::startServerAndClient() {
   //configure time settings
   configTime(0, 0, "north-america.pool.ntp.org");
   setenv("TZ", "CST6CDT,M3.2.0,M11.1.0", 1);
+  tzset();
 
 }
 
 void WebController::getNptTime(char timeBuff[], byte buffLen) {
-  time_t now;
-  time(&now);
-  struct tm tStruct =  *localtime(&now);
-  // if (tStruct.tm_hour == 16 && tStruct.tm_min == 30) {
-  //   if (tStruct.tm_sec <= 2) {
-  //     // update market
-  //   }
-  // }
-  strftime(timeBuff, buffLen, "%a %b %d\n%r", &tStruct); // Mon Apr 13 12:30:45 pm
+  struct tm timeInfo;
+  if(!getLocalTime(&timeInfo)){
+    strcpy(timeBuff, "Failed to get time");
+    return;
+  }
+  strftime(timeBuff, buffLen, "%a %b %d\n%r", &timeInfo); // Mon Apr 13 12:30:45 pm
 }
 
 void WebController::getMarket(char marketBuff[], char *searchTickers[], byte numTickers) {
@@ -129,9 +127,13 @@ void WebController::stock_api_request(char* ticker, char apiBuff[]) {
   }
 }
 
-void WebController::updateServer() {
+bool WebController::updateServer() {
   server.handleClient();
-
+  if(serverDidUpdate){
+    serverDidUpdate = false;
+    return true;
+  }
+  return false;
 }
 
 void WebController::handleRoot() {
@@ -141,12 +143,11 @@ void WebController::handleRoot() {
 void WebController::handleMessage() {
   if (server.args() >= 1 && server.argName(0) == "m") {
     server.arg("m").toCharArray(wifiMessage, wifiMessageBuffLen);
+    serverDidUpdate = true;
     if (wifiMessage[0] == 0 || wifiMessage[1] == 0){
       strcpy(wifiMessage, "Send a message to ");
       strcat(wifiMessage, ipAddress);
     }
-    Serial.print("wifi Message: ");
-    Serial.println(wifiMessage);
     server.send(200, "text/html", INDEX_HTML);
   } else {
     char response[170] = "<html> \n <body> \n <h1>NO Message Received</h1>\n <br>\n <h4>send me a message with ";

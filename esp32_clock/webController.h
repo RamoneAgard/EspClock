@@ -10,6 +10,7 @@ class WebController {
     const byte wifiMessageBuffLen;
     char * wifiMessage;
     char ipAddress[20];
+    bool serverDidUpdate = false;
     WebServer server;
 
     // Methods //
@@ -24,7 +25,7 @@ class WebController {
     void startServerAndClient();
     void getNptTime(char timeBuff[], byte buffLen);
     void getMarket(char marketBuff[], char *searchTickers[], byte numTickers);
-    void updateServer();
+    bool updateServer();
     void getIpAddress(char ipBuff[]);
  
 };

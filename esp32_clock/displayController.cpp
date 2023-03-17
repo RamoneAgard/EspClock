@@ -123,3 +123,14 @@ void DisplayController::setInterruptFunc(void (f)()){
 void DisplayController::show(uint8_t draw_time){
   display.display(draw_time);  
 }
+
+//clears and flushes display buffer
+void DisplayController::clearScreen(){
+  display.clearDisplay();
+  display.flushDisplay();
+}
+
+//brightness should be 255 (full) or under
+void DisplayController::setScreenBrightness(uint8_t brightness){
+  display.setBrightness(brightness);
+}

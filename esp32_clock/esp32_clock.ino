@@ -543,6 +543,8 @@ void IRAM_ATTR display_updater() {
 #endif
 
 // Loop Timing Variables //
+unsigned long currentMillis;
+
 unsigned long lastMarketRequest = 0;
 unsigned long marketRequestDelay = 86400000;
 
@@ -551,49 +553,54 @@ int timeRequestDelay = 300;
 
 
 void setup(){
-  Serial.begin(115200);
-  Serial.println("SetUp");
-
+  // Serial.begin(115200);
+  //Setup the display controller
+  dispControl.startDisplayController();
+  delay(1000);
+  // Serial.println("SetUp");
   //setup the web controller
-  Serial.println("Attempting internet connection");
+  // Serial.println("Attempting internet connection");
   webControl.startServerAndClient();
   webControl.getIpAddress(debugMessage);
-  Serial.println(debugMessage);
+  dispControl.printToScreen(8, debugMessage);
+  dispControl.printToScreen(16, "Hello");
+  // Serial.println(debugMessage);
 
   // get inital market data
-  Serial.print("Attempt Market Request ");
+  // Serial.print("Attempt Market Request ");
   webControl.getMarket(marketApiStorage, apiTickers, numTickers);
-  Serial.println(marketApiStorage);
+  // Serial.println(marketApiStorage);
 
   //get inital time data 
   webControl.getNptTime(timeStorage, timeBuffLen);
-  Serial.println(timeStorage);
+  // Serial.println(timeStorage);
   
-  Serial.println("END SetUp");
+  // Serial.println("END SetUp");
 }
 
 
 void loop(){
+  
+  // currentMillis = millis();
+  // // Time update //
+  // if((unsigned long)(currentMillis - lastTimeRequest) >= timeRequestDelay){
+  //   lastTimeRequest = currentMillis;
+  //   webControl.getNptTime(timeStorage, timeBuffLen);
+  //   // Serial.println(timeStorage);
+  // }
 
-  // Time update //
-  if(millis() >= lastTimeRequest + timeRequestDelay){
-    webControl.getNptTime(timeStorage, timeBuffLen);
-    lastTimeRequest = millis();
-    Serial.println(timeStorage);
-  }
+  // // Market api update //
+  // if((unsigned long)(currentMillis - lastMarketRequest) >= marketRequestDelay){
+  //   lastMarketRequest = currentMillis;
+  //   webControl.getMarket(marketApiStorage, apiTickers, numTickers);
+  //   // Serial.println(marketApiStorage);
+  // }
 
-  // Market api update //
-  if(millis() > lastMarketRequest + marketRequestDelay){
-    webControl.getMarket(marketApiStorage, apiTickers, numTickers);
-    lastMarketRequest = millis();
-    Serial.println(marketApiStorage);
-  }
-
-  // Server message updating //
-  if(webControl.updateServer()){
-    Serial.print("Message Update: ");
-    Serial.println(serverMessageStorage);
-  }
+  // // Server message updating //
+  // if(webControl.updateServer()){
+  //   // Serial.print("Message Update: ");
+  //   // Serial.println(serverMessageStorage);
+  // }
 
 }
 

@@ -21,6 +21,7 @@ class DisplayController {
   private:
     // Fields //
     PxMATRIX display;
+    
     hw_timer_t * timer = NULL;
     void (*interruptFunc)() = NULL;
  
@@ -33,12 +34,15 @@ class DisplayController {
 
     // Methods //
     void startDisplayController();
+    void setInterruptFunc(void (f)());
+    void show(uint8_t draw_time);
+    
     void displayTime(char* tm, uint8_t y1, uint8_t y2);
     int stepScroll(int lastStep, unsigned long firstTime, byte scroll_delay, uint8_t ypos,  char* text, uint8_t colorR, uint8_t colorG, uint8_t colorB);
     void scroll_text(uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB, String text2 = "", uint8_t ypos2 = 24);
     void printToScreen(uint8_t ypos, char* text);
-    void setInterruptFunc(void (f)());
-    void show(uint8_t draw_time);
+    void clearScreen();
+    void setScreenBrightness(uint8_t brightness);
 
     // Some standard colors
     uint16_t myRED;

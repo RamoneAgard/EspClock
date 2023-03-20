@@ -543,27 +543,36 @@ void IRAM_ATTR display_updater() {
 #endif
 
 // Loop Timing Variables //
+unsigned long setupWait = 10000;
 unsigned long currentMillis;
 
 unsigned long lastMarketRequest = 0;
 unsigned long marketRequestDelay = 86400000;
+unsigned long marketDisplayTime = 0;
+int marketDisplayScroll = 0;
+
+unsigned long serverMessageDisplayTime = 0;
+int serverMessageDisplayScroll = 0;
 
 unsigned long lastTimeRequest = 0;
-int timeRequestDelay = 300;
+int timeRequestDelay = 999;
 
 
 void setup(){
-  // Serial.begin(115200);
-  //Setup the display controller
-  dispControl.startDisplayController();
-  delay(1000);
+  Serial.begin(115200);
   // Serial.println("SetUp");
   //setup the web controller
   // Serial.println("Attempting internet connection");
   webControl.startServerAndClient();
-  webControl.getIpAddress(debugMessage);
-  dispControl.printToScreen(8, debugMessage);
-  dispControl.printToScreen(16, "Hello");
+  webControl.getIpAddress(debugMessage); 
+  //Setup the display controller
+  dispControl.setInterruptFunc(display_updater);
+  dispControl.startDisplayController();
+  //delay(1000);
+  dispControl.setScreenBrightness(50);
+  dispControl.printToScreen(0, "IP Address:");  
+  dispControl.printToScreen(8, debugMessage, true);
+    
   // Serial.println(debugMessage);
 
   // get inital market data
@@ -574,20 +583,27 @@ void setup(){
   //get inital time data 
   webControl.getNptTime(timeStorage, timeBuffLen);
   // Serial.println(timeStorage);
-  
+  unsigned long curr = millis();
+  while((millis()-curr) <= setupWait){}
   // Serial.println("END SetUp");
+  dispControl.clearScreen();
 }
 
-
+/*
+Colors in the form (g,b,r) for old board
+Colors in form (r,g,b) for new board
+*/
+//d
 void loop(){
-  
-  // currentMillis = millis();
-  // // Time update //
-  // if((unsigned long)(currentMillis - lastTimeRequest) >= timeRequestDelay){
-  //   lastTimeRequest = currentMillis;
-  //   webControl.getNptTime(timeStorage, timeBuffLen);
-  //   // Serial.println(timeStorage);
-  // }
+  // delay(100);
+  currentMillis = millis();
+  // Time update //
+  if((unsigned long)(currentMillis - lastTimeRequest) >= timeRequestDelay){
+    lastTimeRequest = currentMillis;
+    webControl.getNptTime(timeStorage, timeBuffLen);
+    // Serial.println(timeStorage);
+    dispControl.displayTime(timeStorage, 0, 24, 0, 255 , 143);
+  }
 
   // // Market api update //
   // if((unsigned long)(currentMillis - lastMarketRequest) >= marketRequestDelay){
@@ -596,11 +612,32 @@ void loop(){
   //   // Serial.println(marketApiStorage);
   // }
 
-  // // Server message updating //
-  // if(webControl.updateServer()){
-  //   // Serial.print("Message Update: ");
-  //   // Serial.println(serverMessageStorage);
-  // }
+  // Server message updating //
+  if(webControl.updateServer()){
+    // Serial.print("Message Update: ");
+    // Serial.println(serverMessageStorage);
+  }
+
+
+  // Display Loop Functions // 
+
+  // Market Api Display
+  if(marketDisplayScroll < 0){
+    marketDisplayScroll = 0;
+    marketDisplayTime = currentMillis;
+  }
+  marketDisplayScroll = dispControl.stepScroll(marketDisplayScroll, marketDisplayTime, 150, 8, marketApiStorage, 150, 40, 80);
+
+  // int stepScroll(uint8_t ypos, unsigned long scroll_delay, String text, uint8_t colorR, uint8_t colorG, uint8_t colorB, unsigned long firstTime, int lastStep = 0) {
+  // marketScroll = stepScroll(8, 150, stocks, 255, 255, 0, markScrollTime, marketScroll);
+  // sStep = stepScroll(16, 75, wifiMessage, 150, 10, 0, scrollTime, sStep);
+
+  // Server Message display
+  if(serverMessageDisplayScroll < 0){
+    serverMessageDisplayScroll = 0;
+    serverMessageDisplayTime = currentMillis;
+  }
+  serverMessageDisplayScroll = dispControl.stepScroll(serverMessageDisplayScroll, serverMessageDisplayTime, 75, 16, serverMessageStorage, 160, 50, 255);
 
 }
 

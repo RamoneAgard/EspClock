@@ -24,14 +24,16 @@ void DisplayController::startDisplayController(){
   #endif
 }
 
-void DisplayController::displayTime(char tm[], uint8_t y1, uint8_t y2){
+void DisplayController::displayTime(char tm[], uint8_t y1, uint8_t y2, uint8_t colorR, uint8_t colorG, uint8_t colorB){
   char* secondToken = strtok(tm,"\n");
   if(secondToken != NULL){
     secondToken = strtok(NULL, "\n");
   }
+
   // int split = tm.indexOf('\n');
   // String top = tm.substring(0, split);
   // String bottom = tm.substring(split + 1, 19) + tm.substring(20);
+  display.setTextColor(display.color565(colorB, colorR, colorG));
   display.setTextSize(1);
   display.setTextWrap(true);
   display.setCursor(2, y1);
@@ -59,7 +61,7 @@ int DisplayController::stepScroll(int lastStep, unsigned long firstTime, byte sc
     display.setTextSize(1);
     display.setRotation(0);
     display.fillRect(0, ypos, 64, 8, display.color565(0, 0, 0));
-    display.setTextColor(display.color565(colorR, colorG, colorB));
+    display.setTextColor(display.color565(colorB, colorR, colorG));
     if (startStep - lastStep <= endStep) {
       display.setCursor(0, ypos);
       return -1;
@@ -71,7 +73,8 @@ int DisplayController::stepScroll(int lastStep, unsigned long firstTime, byte sc
   return lastStep;
 }
 
-void DisplayController::printToScreen(uint8_t ypos, char* text){
+void DisplayController::printToScreen(uint8_t ypos, char* text, bool textWrap){
+  display.setTextWrap(textWrap);
   display.fillRect(0, ypos, 64, 8, display.color565(0, 0, 0));
   display.setCursor(0, ypos);
   display.println(text);
@@ -88,12 +91,12 @@ void DisplayController::scroll_text(uint8_t ypos, unsigned long scroll_delay, St
   display.setTextWrap(false);  // we don't wrap text so it scrolls nicely
   display.setTextSize(1);
   display.setRotation(0);
-  display.setTextColor(display.color565(colorR, colorG, colorB));
+  display.setTextColor(display.color565(colorB, colorR, colorG));
 
   // Asuming 5 pixel average character width
   for (int xpos = matrix_width; xpos > -(5 + (text_length * 6)); xpos--)
   {
-    display.setTextColor(display.color565(colorR, colorG, colorB));
+    display.setTextColor(display.color565(colorB, colorR, colorG));
     display.clearDisplay();
     display.setCursor(xpos, ypos);
     display.println(text);
@@ -133,4 +136,8 @@ void DisplayController::clearScreen(){
 //brightness should be 255 (full) or under
 void DisplayController::setScreenBrightness(uint8_t brightness){
   display.setBrightness(brightness);
+}
+
+void DisplayController::setTextColor(uint8_t colorR, uint8_t colorG, uint8_t colorB){
+  display.setTextColor(display.color565(colorB, colorR, colorG));
 }

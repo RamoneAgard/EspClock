@@ -48,7 +48,11 @@ void WebController::getNptTime(char timeBuff[], byte buffLen) {
     strcpy(timeBuff, "Failed to get time");
     return;
   }
-  strftime(timeBuff, buffLen, "%a %b %d\n%I:%M:%S%p", &timeInfo); // Mon Apr 13 12:30:45 pm
+  // timeInfo.tm_sec += 1;
+  // if(timeInfo.tm_sec == 60){
+  //   mktime(&timeInfo);
+  // }
+  strftime(timeBuff, buffLen, "%a %b %d\n%I:%M:%S%p", &timeInfo); // Mon Apr 13 12:30:45pm
 }
 
 void WebController::getMarket(char marketBuff[], char *searchTickers[], byte numTickers) {

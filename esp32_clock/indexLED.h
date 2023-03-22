@@ -12,7 +12,7 @@ const char INDEX_HTML[] PROGMEM = R"=====(
 <h1>LED Clock Board - L&R TECH</h1>
 <h4>Send a message to the display!<h4>
 <form id='message-form' class='form' method='GET' action='/message'>
-<input type='text' class='form-control' required='required' name='m' maxlength='30' placeholder="Enter Message for LED board Here!">
+<input type='text' class='form-control' required='required' name='m' maxlength='60' placeholder="Enter Message for LED board Here!">
 <button type='submit' class='btn btn-primary'>Send</button>
 </form>
 </body>

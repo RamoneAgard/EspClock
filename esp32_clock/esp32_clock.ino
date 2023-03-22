@@ -13,7 +13,7 @@ char* apiTickers[numTickers] = {"spy", "qqqm", "msft", "swppx", "pacb"};
 const int marketApiBuffLen = 25 * numTickers;
 char marketApiStorage[marketApiBuffLen];
 
-const byte serverMessageBuffLen = 35;
+const byte serverMessageBuffLen = 85;
 char serverMessageStorage[serverMessageBuffLen];
 
 char debugMessage[50];
@@ -44,8 +44,9 @@ unsigned long currentMillis;
 bool gotUpdate = false;
 const char updateHourFirstDigit = '4';
 const char updateMinSecDigit = '3';
-const char updateSecFistDigit = '0';
-const char updateSecSecondDigit = '5';
+const char updateMinFirstDigit = '0';
+const char updateSecSecondDigit = '0';
+const char updateSecFirstDigit = '5';
 unsigned long marketDisplayTime = 0;
 int marketDisplayScroll = 0;
 
@@ -56,10 +57,10 @@ unsigned long lastTimeRequest = 0;
 int timeRequestDelay = 999;
 
 // Function to check if timeStorage matches the update time
-bool isUpdateTime(byte hourFDex, byte minSDex, byte secFDex, byte secSDex){
+bool isUpdateTime(byte hourFDex, byte minSDex, byte minFDex, byte secSDex, byte secFDex){
   if(timeStorage[hourFDex] == updateHourFirstDigit){
-    if(timeStorage[minSDex] == updateMinSecDigit){
-      if(timeStorage[secFDex] == updateSecFistDigit && timeStorage[secSDex] == updateSecSecondDigit){
+    if(timeStorage[minSDex] == updateMinSecDigit && timeStorage[minFDex] == updateMinFirstDigit){
+      if(timeStorage[secSDex] == updateSecSecondDigit && timeStorage[secFDex] == updateSecFirstDigit){
         return true;
       }
     }
@@ -116,7 +117,7 @@ void loop(){
   }
   
   // Market api update //
-  if(isUpdateTime(12, 14, 17, 18)){
+  if(isUpdateTime(12, 14, 15, 17, 18)){
     webControl.getMarket(marketApiStorage, apiTickers, numTickers);
   }
   

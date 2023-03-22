@@ -147,6 +147,9 @@ void WebController::handleRoot() {
 void WebController::handleMessage() {
   if (server.args() >= 1 && server.argName(0) == "m") {
     server.arg("m").toCharArray(wifiMessage, wifiMessageBuffLen);
+    strcat(wifiMessage, " ->(");
+    strcat(wifiMessage, ipAddress);
+    strcat(wifiMessage, ")");
     serverDidUpdate = true;
     if (wifiMessage[0] == 0 || wifiMessage[1] == 0){
       strcpy(wifiMessage, "Send a message to ");

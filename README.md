@@ -1,2 +1,4 @@
-Arduino code for an esp32 driven LED clock
-Makes use of the PxMatrix package
+# ESP32 LED Clock and Message Board
+Project using an ESP32 wifi board to drive an LED board and display the local time and date, as well as messages sent over wifi (in the same local subnet)
+
+This project is a wifi clock and message board programmed in C++ using the Arduino IDE. This application uses an ESP32 board along with the PxMatrix library to drive a LED light board. The wifi module of the ESP32 is also used along with the WebServer, HTTPClient, Wifi, and ArduinoJson libraries to acquire the locate date and time, make api requests to alphavantage for stock market data, and act as a local server to host an HTML file and process the HTML form. The Arduino file that runs the main loop of the program ties these c++ files together to facilitate the data flow from acquiring the data from the internet, and then displaying this data to the LED light board. In turn this allows users to see the date and time, see stock market prices, and send messages to the boards local ip and have them displayed onto the LED board. Ways to impove this project include bluetooth onboarding as the Wifi AP information is hard coded, and updating the hosted HTML file to include stock ticker requests as these tickers are also hard coded.
